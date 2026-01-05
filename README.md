@@ -45,6 +45,8 @@ equity-trend-analyzer/
 │
 ├── app.py
 ├── requirements.txt
+├── README.md
+├── .gitignore
 │
 └── src/
     ├── data.py

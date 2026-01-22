@@ -33,6 +33,7 @@ def price_chart(close_prices, ma_short, ma_long, short_days, long_days):
     plt.xlabel("Date")
     plt.ylabel("Price")
     plt.legend(loc='best')
+    plt.grid(True)
 
     return fig
 
@@ -57,5 +58,6 @@ def rsi_chart(rsi_values):
     plt.xlabel("Date")
     plt.ylabel("RSI")
     plt.legend(loc='best')
+    plt.grid(True)
 
     return fig

@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import pandas as pd
 
 from src.data import price_data
@@ -66,7 +66,22 @@ if "Close" not in df.columns:
     st.error("No 'Close' price data available for the given ticker.")
     st.stop()
 
+idx = pd.to_datetime(df.index, errors="coerce")
+last_dt = idx.max()
+
+if pd.isna(last_dt):
+    st.caption("Last updated: **N/A**")
+else:
+    if last_dt.hour == 0 and last_dt.minute == 0 and last_dt.second == 0:
+        st.caption(f"Last updated: **{last_dt.strftime('%Y-%m-%d')}**")
+    else:
+        st.caption(f"Last updated: **{last_dt.strftime('%Y-%m-%d %H:%M')}**")
+
 close_prices = df["Close"].squeeze().dropna()
+
+initial_price = close_prices.iloc[0]
+buy_hold_returns = close_prices / initial_price - 1
+
 returns = close_prices.pct_change().dropna()
 
 total_returns = total_return(close_prices)
@@ -96,12 +111,12 @@ st.markdown("""<style>.pill {display: inline-block; padding: 10px 18px; border-r
 st.markdown("""<style>.row-formatting {display: flex; flex-wrap: nowrap; gap: 12px; align-items: center;
             margin-bottom: 12px; overflow-x: auto;} </style> """, unsafe_allow_html=True)
 
-tr_card, av_card, mdd_card, ts_card = st.columns(4)
+tr_card, av_card, mdd_card, bh_card, ts_card = st.columns(5)
 tr_card.metric("Total Return:", f"{total_returns*100:.2f}%")
 av_card.metric("Annual Volatility:", f"{volatility*100:.2f}%")
 mdd_card.metric("Max Drawdown:", f"{mdd*100:.2f}%")
 ts_card.metric("Trend Strength ($R^2$):", f"{r_squared:.2f}")
-
+bh_card.metric("Buy & Hold Return:", f"{buy_hold_returns.iloc[-1] * 100:.2f}%")
 st.write("")
 
 trend_class = "gray-box"
